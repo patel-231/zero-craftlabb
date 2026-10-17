@@ -15,7 +15,10 @@ import { sendDualOrderEmails, sendTestEmail } from './email.ts';
 import { Order, OrderItem, CustomerDetails, Product, Category } from '../src/types/index.ts';
 
 const router = Router();
-const UPLOADS_DIR = path.resolve(process.cwd(), 'data', 'uploads');
+const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const UPLOADS_DIR = isVercel
+  ? path.join('/tmp', 'data', 'uploads')
+  : path.resolve(process.cwd(), 'data', 'uploads');
 
 // Helper to format WhatsApp message
 function generateWhatsAppMessageText(order: Order, brandName: string): string {
@@ -549,12 +552,19 @@ router.post('/upload', requireAdmin, (req: AuthenticatedRequest, res: Response) 
     else if (mimeType.includes('svg')) ext = 'svg';
 
     const safeName = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}.${ext}`;
-    const filePath = path.join(UPLOADS_DIR, safeName);
 
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${safeName}`;
-    res.json({ url: publicUrl, filename: safeName });
+    try {
+      if (!fs.existsSync(UPLOADS_DIR)) {
+        fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+      }
+      const filePath = path.join(UPLOADS_DIR, safeName);
+      fs.writeFileSync(filePath, buffer);
+      const publicUrl = `/uploads/${safeName}`;
+      return res.json({ url: publicUrl, filename: safeName });
+    } catch (diskErr) {
+      console.warn('[Upload] Disk write failed (serverless environment), returning data URL:', diskErr);
+      return res.json({ url: base64Data, filename: safeName });
+    }
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Error saving uploaded file' });
   }

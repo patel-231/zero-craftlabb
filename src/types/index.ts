@@ -136,12 +136,10 @@ export interface Order {
 }
 
 export interface EmailConfig {
-  provider: 'brevo' | 'resend';
+  provider?: 'brevo';
   brevoApiKey?: string;
   brevoSenderEmail?: string;
   brevoSenderName?: string;
-  resendApiKey?: string;
-  resendSenderEmail?: string;
 }
 
 export interface WebsiteSettings {

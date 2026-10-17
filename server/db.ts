@@ -6,8 +6,12 @@ import { Product, Category, Order, WebsiteSettings, AdminUser } from '../src/typ
 
 dotenv.config();
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'store.json');
+const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const BUNDLED_DATA_DIR = path.resolve(process.cwd(), 'data');
+const BUNDLED_DB_FILE = path.join(BUNDLED_DATA_DIR, 'store.json');
+
+const ACTIVE_DATA_DIR = isVercel ? path.join('/tmp', 'data') : BUNDLED_DATA_DIR;
+const ACTIVE_DB_FILE = path.join(ACTIVE_DATA_DIR, 'store.json');
 
 export interface DatabaseSchema {
   products: Product[];
@@ -404,19 +408,24 @@ class Database {
   }
 
   private ensureDataDir() {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    const uploadsDir = path.join(DATA_DIR, 'uploads');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    try {
+      if (!fs.existsSync(ACTIVE_DATA_DIR)) {
+        fs.mkdirSync(ACTIVE_DATA_DIR, { recursive: true });
+      }
+      const uploadsDir = path.join(ACTIVE_DATA_DIR, 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+    } catch (err) {
+      console.warn('[Database] Filesystem read-only or permission warning (normal in serverless):', err);
     }
   }
 
   private loadData(): DatabaseSchema {
-    if (fs.existsSync(DB_FILE)) {
+    // 1. Try reading active file (/tmp/data/store.json in Vercel or data/store.json locally)
+    if (fs.existsSync(ACTIVE_DB_FILE)) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const raw = fs.readFileSync(ACTIVE_DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
         return {
           products: parsed.products || DEFAULT_PRODUCTS,
@@ -427,9 +436,33 @@ class Database {
           auditLogs: parsed.auditLogs || [],
         };
       } catch (err) {
-        console.error('Error reading store.json, re-initializing database with defaults', err);
+        console.error('Error reading ACTIVE_DB_FILE, checking bundled repository store...', err);
       }
     }
+
+    // 2. Try reading bundled data/store.json from git repository
+    if (fs.existsSync(BUNDLED_DB_FILE)) {
+      try {
+        const raw = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        const data: DatabaseSchema = {
+          products: parsed.products || DEFAULT_PRODUCTS,
+          categories: parsed.categories || DEFAULT_CATEGORIES,
+          orders: parsed.orders || [],
+          settings: { ...DEFAULT_SETTINGS, ...(parsed.settings || {}) },
+          admins: parsed.admins && parsed.admins.length > 0 ? parsed.admins : this.createInitialAdmins(),
+          auditLogs: parsed.auditLogs || [],
+        };
+        // Warm up active store if different
+        if (ACTIVE_DB_FILE !== BUNDLED_DB_FILE) {
+          this.saveData(data);
+        }
+        return data;
+      } catch (err) {
+        console.error('Error reading BUNDLED_DB_FILE, initializing defaults...', err);
+      }
+    }
+
     const initial: DatabaseSchema = {
       products: DEFAULT_PRODUCTS,
       categories: DEFAULT_CATEGORIES,
@@ -461,11 +494,15 @@ class Database {
   }
 
   private saveData(dataToSave?: DatabaseSchema) {
-    this.ensureDataDir();
-    const data = dataToSave || this.data;
-    const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempFile, DB_FILE);
+    try {
+      this.ensureDataDir();
+      const data = dataToSave || this.data;
+      const tempFile = `${ACTIVE_DB_FILE}.tmp.${Date.now()}`;
+      fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
+      fs.renameSync(tempFile, ACTIVE_DB_FILE);
+    } catch (err) {
+      console.warn('[Database] Could not write store.json to disk (filesystem may be read-only). In-memory state maintained.', err);
+    }
   }
 
   // --- Products ---

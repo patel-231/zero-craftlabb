@@ -2,7 +2,7 @@ import { Order, WebsiteSettings } from '../src/types/index.ts';
 
 export interface DualEmailSendResult {
   success: boolean;
-  provider: 'brevo' | 'resend' | 'none';
+  provider: 'brevo' | 'none';
   customerEmailSent: boolean;
   businessEmailSent: boolean;
   error?: string;
@@ -316,74 +316,45 @@ async function sendViaBrevo(params: {
   }
 }
 
-async function sendViaResend(params: {
-  apiKey: string;
-  from: string;
-  to: string[];
-  subject: string;
-  html: string;
-}): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${params.apiKey}`,
-      },
-      body: JSON.stringify({
-        from: params.from,
-        to: params.to,
-        subject: params.subject,
-        html: params.html,
-      }),
-    });
-
-    const data = await res.json();
-    if (res.ok && data.id) {
-      return { success: true, messageId: data.id };
-    } else {
-      return { success: false, error: data.message || 'Resend error' };
-    }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Network failure connecting to Resend' };
-  }
-}
-
 // ==========================================
-// MASTER DUAL DISPATCH FUNCTION
+// MASTER DUAL DISPATCH FUNCTION (BREVO API)
 // ==========================================
 
 export async function sendDualOrderEmails(
   order: Order,
   settings: WebsiteSettings
 ): Promise<DualEmailSendResult> {
-  // Check Brevo credentials (from settings first, then env)
-  const brevoApiKey =
+  // Check Brevo credentials (from settings first, then multiple env var aliases)
+  const rawBrevoApiKey =
     settings.emailConfig?.brevoApiKey ||
     process.env.BREVO_API_KEY ||
+    process.env.VITE_BREVO_API_KEY ||
+    process.env.BREVO_KEY ||
+    process.env.BREVO_APIKEY ||
+    process.env.SENDINBLUE_API_KEY ||
     '';
+  const brevoApiKey = rawBrevoApiKey.trim().replace(/^["']|["']$/g, '');
 
-  const brevoSenderEmail =
+  const brevoSenderEmail = (
     settings.emailConfig?.brevoSenderEmail ||
     process.env.BREVO_SENDER_EMAIL ||
-    settings.contact.businessOrderEmail;
+    process.env.BREVO_FROM_EMAIL ||
+    settings.contact.businessOrderEmail ||
+    'orders@zerocraftlabb.com'
+  ).trim().replace(/^["']|["']$/g, '');
 
-  const brevoSenderName =
+  const brevoSenderName = (
     settings.emailConfig?.brevoSenderName ||
     process.env.BREVO_SENDER_NAME ||
+    process.env.BREVO_FROM_NAME ||
     settings.brand.name ||
-    'Zero Craftlabb';
-
-  // Check Resend credentials as fallback
-  const resendApiKey =
-    settings.emailConfig?.resendApiKey ||
-    process.env.RESEND_API_KEY ||
-    '';
+    'Zero Craftlabb'
+  ).trim().replace(/^["']|["']$/g, '');
 
   const businessEmail = settings.contact.businessOrderEmail;
   const customerEmail = order.customer.email;
 
-  // 1. If Brevo API key is available
+  // If Brevo API key is available
   if (brevoApiKey) {
     const customerHtml = generateCustomerConfirmationHtml(order, settings);
     const businessHtml = generateBusinessNotificationHtml(order, settings);
@@ -397,7 +368,7 @@ export async function sendDualOrderEmails(
       htmlContent: customerHtml,
     });
 
-    // Dispatch 2: To Business Owner
+    // Dispatch 2: To Business Owner (even if ordered via WhatsApp!)
     const bizRes = await sendViaBrevo({
       apiKey: brevoApiKey,
       sender: { name: `${settings.brand.name} Orders`, email: brevoSenderEmail },
@@ -420,50 +391,14 @@ export async function sendDualOrderEmails(
     };
   }
 
-  // 2. If Resend API key is available
-  if (resendApiKey) {
-    const fromAddr = process.env.EMAIL_FROM || `${settings.brand.name} <orders@resend.dev>`;
-    const customerHtml = generateCustomerConfirmationHtml(order, settings);
-    const businessHtml = generateBusinessNotificationHtml(order, settings);
-
-    const custRes = await sendViaResend({
-      apiKey: resendApiKey,
-      from: fromAddr,
-      to: [customerEmail],
-      subject: `✨ Order Confirmation: ${order.reference} — ${settings.brand.name}`,
-      html: customerHtml,
-    });
-
-    const bizRes = await sendViaResend({
-      apiKey: resendApiKey,
-      from: fromAddr,
-      to: [businessEmail],
-      subject: `🚨 [${order.channel.toUpperCase()} ORDER] ${order.reference} - ${order.customer.fullName} (${settings.commerce.currencySymbol}${order.total})`,
-      html: businessHtml,
-    });
-
-    const anySuccess = custRes.success || bizRes.success;
-    const errors: string[] = [];
-    if (!custRes.success) errors.push(`Customer email: ${custRes.error}`);
-    if (!bizRes.success) errors.push(`Business email: ${bizRes.error}`);
-
-    return {
-      success: anySuccess,
-      provider: 'resend',
-      customerEmailSent: custRes.success,
-      businessEmailSent: bizRes.success,
-      error: errors.length > 0 ? errors.join(' | ') : undefined,
-    };
-  }
-
-  // 3. No active API key configured
-  console.log(`[Email Service] Neither BREVO_API_KEY nor RESEND_API_KEY is configured. Order ${order.reference} details logged.`);
+  // No Brevo API key configured
+  console.log(`[Email Service] Brevo API key not configured yet. Order ${order.reference} logged.`);
   return {
     success: false,
     provider: 'none',
     customerEmailSent: false,
     businessEmailSent: false,
-    error: 'Brevo API key is not configured. Add your Brevo API key in Admin Settings > Email Configuration or environment variables.',
+    error: 'Brevo API key is not configured. Add your Brevo API key in Admin Settings or Vercel Environment Variables (BREVO_API_KEY).',
   };
 }
 
@@ -475,20 +410,31 @@ export async function sendTestEmail(
   targetEmail: string,
   settings: WebsiteSettings
 ): Promise<{ success: boolean; provider: string; message?: string; error?: string }> {
-  const brevoApiKey =
+  const rawBrevoApiKey =
     settings.emailConfig?.brevoApiKey ||
     process.env.BREVO_API_KEY ||
+    process.env.VITE_BREVO_API_KEY ||
+    process.env.BREVO_KEY ||
+    process.env.BREVO_APIKEY ||
+    process.env.SENDINBLUE_API_KEY ||
     '';
+  const brevoApiKey = rawBrevoApiKey.trim().replace(/^["']|["']$/g, '');
 
-  const brevoSenderEmail =
+  const brevoSenderEmail = (
     settings.emailConfig?.brevoSenderEmail ||
     process.env.BREVO_SENDER_EMAIL ||
-    settings.contact.businessOrderEmail;
+    process.env.BREVO_FROM_EMAIL ||
+    settings.contact.businessOrderEmail ||
+    'orders@zerocraftlabb.com'
+  ).trim().replace(/^["']|["']$/g, '');
 
-  const brevoSenderName =
+  const brevoSenderName = (
     settings.emailConfig?.brevoSenderName ||
     process.env.BREVO_SENDER_NAME ||
-    settings.brand.name;
+    process.env.BREVO_FROM_NAME ||
+    settings.brand.name ||
+    'Zero Craftlabb'
+  ).trim().replace(/^["']|["']$/g, '');
 
   if (brevoApiKey) {
     const res = await sendViaBrevo({
@@ -517,32 +463,9 @@ export async function sendTestEmail(
     };
   }
 
-  const resendApiKey =
-    settings.emailConfig?.resendApiKey ||
-    process.env.RESEND_API_KEY ||
-    '';
-
-  if (resendApiKey) {
-    const fromAddr = process.env.EMAIL_FROM || `${settings.brand.name} <orders@resend.dev>`;
-    const res = await sendViaResend({
-      apiKey: resendApiKey,
-      from: fromAddr,
-      to: [targetEmail],
-      subject: `✅ Resend API Test Successful — ${settings.brand.name}`,
-      html: `<p>Resend integration working for ${settings.brand.name}!</p>`,
-    });
-
-    return {
-      success: res.success,
-      provider: 'Resend',
-      message: res.success ? `Test email sent to ${targetEmail} via Resend!` : undefined,
-      error: res.error,
-    };
-  }
-
   return {
     success: false,
     provider: 'none',
-    error: 'No Brevo or Resend API key configured yet. Please enter your Brevo API key below and click Save.',
+    error: 'No Brevo API key configured yet. Please enter your Brevo API key (starts with xkeysib-) and click Save Settings.',
   };
 }

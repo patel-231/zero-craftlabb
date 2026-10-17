@@ -323,53 +323,10 @@ export const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Active Email Provider
-              </label>
-              <select
-                value={formData.emailConfig?.provider || 'brevo'}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emailConfig: {
-                      ...(formData.emailConfig || { provider: 'brevo' }),
-                      provider: e.target.value as 'brevo' | 'resend',
-                    },
-                  })
-                }
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm font-bold text-[#17191F] focus:outline-none"
-              >
-                <option value="brevo">Brevo API (Formerly Sendinblue) — Recommended</option>
-                <option value="resend">Resend API</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Sender Name (Appears in Customer's Inbox)
-              </label>
-              <input
-                type="text"
-                value={formData.emailConfig?.brevoSenderName || formData.brand.name}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emailConfig: {
-                      ...(formData.emailConfig || { provider: 'brevo' }),
-                      brevoSenderName: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Zero Craftlabb"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Brevo API Key (Master Key) *
+                Brevo API Key *
               </label>
               <input
                 type="text"
@@ -379,6 +336,7 @@ export const AdminSettings: React.FC = () => {
                     ...formData,
                     emailConfig: {
                       ...(formData.emailConfig || { provider: 'brevo' }),
+                      provider: 'brevo',
                       brevoApiKey: e.target.value.trim(),
                     },
                   })
@@ -387,7 +345,32 @@ export const AdminSettings: React.FC = () => {
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm font-mono focus:outline-none focus:border-[#5B5FEF]"
               />
               <p className="text-[10px] text-zinc-500 mt-1">
-                Get this from: <strong>Brevo Dashboard &rarr; SMTP &amp; API &rarr; API Keys</strong>
+                From: <strong>Brevo Dashboard &rarr; SMTP &amp; API &rarr; API Keys</strong>
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                Sender Name (Inbox)
+              </label>
+              <input
+                type="text"
+                value={formData.emailConfig?.brevoSenderName || formData.brand.name}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    emailConfig: {
+                      ...(formData.emailConfig || { provider: 'brevo' }),
+                      provider: 'brevo',
+                      brevoSenderName: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Zero Craftlabb"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none"
+              />
+              <p className="text-[10px] text-zinc-500 mt-1">
+                Displayed sender name on customer receipts.
               </p>
             </div>
 
@@ -403,15 +386,16 @@ export const AdminSettings: React.FC = () => {
                     ...formData,
                     emailConfig: {
                       ...(formData.emailConfig || { provider: 'brevo' }),
+                      provider: 'brevo',
                       brevoSenderEmail: e.target.value.trim(),
                     },
                   })
                 }
-                placeholder="orders@zerocraftlabb.com"
+                placeholder="ompatel787877@gmail.com"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none focus:border-[#5B5FEF]"
               />
               <p className="text-[10px] text-zinc-500 mt-1">
-                Must be an active/verified sender in your Brevo account (e.g. your login email or custom domain).
+                Your verified sender address in your Brevo account.
               </p>
             </div>
           </div>
