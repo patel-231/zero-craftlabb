@@ -1,0 +1,6 @@
+{
+  "name": "Zero Craftlabb — Premium Automotive & Art E-Commerce",
+  "description": "Official Zero Craftlabb store for premium automotive wall art, accessories, wooden décor, and handmade crafts with WhatsApp and email ordering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

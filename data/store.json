@@ -1,0 +1,657 @@
+{
+  "products": [
+    {
+      "id": "prod-f1-tracks",
+      "name": "Grand Prix Circuit Wall Art (Set of 6 Tracks)",
+      "slug": "grand-prix-circuit-wall-art-set",
+      "sku": "ZC-ART-GP06",
+      "shortDescription": "Precision cut matte-black acrylic racing circuits including Monaco, Spa, Silverstone, and Monza.",
+      "description": "Celebrate the pinnacle of motorsport with our precision laser-cut Formula circuit wall art set. Crafted from 5mm high-density matte cast acrylic with pre-mounted invisible wall float brackets for a striking 3D shadow drop effect on your wall.",
+      "categoryId": "cat-auto-art",
+      "categorySlug": "automotive-wall-art",
+      "categoryName": "Automotive Wall Art",
+      "images": [
+        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80",
+      "price": 2499,
+      "salePrice": 1999,
+      "currency": "INR",
+      "stock": 24,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": "var-size",
+          "name": "Size",
+          "options": [
+            {
+              "label": "Medium (25cm each)",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Large (40cm each)",
+              "priceAdjustment": 800
+            }
+          ]
+        },
+        {
+          "id": "var-finish",
+          "name": "Finish",
+          "options": [
+            {
+              "label": "Stealth Matte Black",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Brushed Titanium Grey",
+              "priceAdjustment": 200
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "Automotive",
+        "F1",
+        "Wall Art",
+        "Bestseller"
+      ],
+      "isFeatured": true,
+      "isBestseller": true,
+      "isNewArrival": false,
+      "isPublished": true,
+      "specifications": {
+        "Material": "Cast Acrylic 5mm",
+        "Finish": "Matte Non-Glare",
+        "Mounting": "Invisible 3M VHB Wall Tabs Included",
+        "Country of Origin": "India"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:56:01.041Z"
+    },
+    {
+      "id": "prod-classic-porsche-silhouette",
+      "name": "911 Classic Profile Acrylic Wall Silhouette",
+      "slug": "911-classic-profile-acrylic-wall-silhouette",
+      "sku": "ZC-ART-911SIL",
+      "shortDescription": "Iconic aerodynamic side profile silhouette of the timeless 1974 sports coupe.",
+      "description": "Clean, flowing silhouette capturing the legendary curves of the classic air-cooled coupe. Cut with aerospace-grade laser precision and chamfered edges to elevate any garage, studio, or living room.",
+      "categoryId": "cat-auto-art",
+      "categorySlug": "automotive-wall-art",
+      "categoryName": "Automotive Wall Art",
+      "images": [
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
+      "price": 1799,
+      "salePrice": 1499,
+      "currency": "INR",
+      "stock": 18,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": "var-length",
+          "name": "Length",
+          "options": [
+            {
+              "label": "60 cm Length",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "90 cm Length",
+              "priceAdjustment": 600
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "Porsche",
+        "Silhouette",
+        "Car Art"
+      ],
+      "isFeatured": true,
+      "isBestseller": true,
+      "isNewArrival": true,
+      "isPublished": true,
+      "specifications": {
+        "Material": "Aviation grade acrylic",
+        "Thickness": "4.5 mm",
+        "Weight": "650g"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    },
+    {
+      "id": "prod-machined-valve-caps",
+      "name": "Billet Aluminium Knurled Tire Valve Stem Caps (Set of 4)",
+      "slug": "billet-aluminium-knurled-tire-valve-caps",
+      "sku": "ZC-ACC-VLV04",
+      "shortDescription": "CNC machined aerospace aluminium with diamond knurling and airtight internal neoprene O-rings.",
+      "description": "Ditch flimsy plastic tire caps for our CNC lathed solid billet aluminium valve caps. Feature deep diamond knurling for easy grip and premium internal rubber seal to prevent pressure leaks and corrosion.",
+      "categoryId": "cat-auto-acc",
+      "categorySlug": "automotive-accessories",
+      "categoryName": "Automotive Accessories",
+      "images": [
+        "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80",
+      "price": 699,
+      "salePrice": 549,
+      "currency": "INR",
+      "stock": 39,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": "var-color",
+          "name": "Anodized Color",
+          "options": [
+            {
+              "label": "Electric Indigo Blue",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Satin Gunmetal",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Sunset Coral Red",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Raw Brushed Silver",
+              "priceAdjustment": 0
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "Accessories",
+        "Aluminium",
+        "CNC",
+        "Car"
+      ],
+      "isFeatured": false,
+      "isBestseller": true,
+      "isNewArrival": false,
+      "isPublished": true,
+      "specifications": {
+        "Fitment": "Universal Schrader valve (All Cars, SUVs, Motorcycles)",
+        "Material": "6061-T6 Billet Aluminium"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:11.630Z"
+    },
+    {
+      "id": "prod-wooden-geometric-clock",
+      "name": "Kinetic Geometric Teakwood Wall Clock",
+      "slug": "kinetic-geometric-teakwood-wall-clock",
+      "sku": "ZC-DEC-CLK01",
+      "shortDescription": "Hand-finished sustainable reclaimed teakwood with silent sweep Japanese quartz movement.",
+      "description": "An architectural centerpiece for modern interiors. Constructed using precision radial wood joints and natural beeswax polish. No loud ticking—features an ultra-silent sweep quartz mechanism.",
+      "categoryId": "cat-home-decor",
+      "categorySlug": "home-and-wall-decor",
+      "categoryName": "Home & Wall Décor",
+      "images": [
+        "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?auto=format&fit=crop&w=1000&q=80",
+        "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?auto=format&fit=crop&w=1000&q=80",
+      "price": 2899,
+      "salePrice": 2499,
+      "currency": "INR",
+      "stock": 10,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": "var-diameter",
+          "name": "Diameter",
+          "options": [
+            {
+              "label": "12-inch (30cm)",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "16-inch (40cm)",
+              "priceAdjustment": 700
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "Wooden",
+        "Wall Clock",
+        "Minimalist",
+        "Home Decor"
+      ],
+      "isFeatured": true,
+      "isBestseller": false,
+      "isNewArrival": true,
+      "isPublished": true,
+      "specifications": {
+        "Wood Type": "Reclaimed Indian Teakwood",
+        "Movement": "Silent Sweep Quartz (AA battery operated)",
+        "Warranty": "1 Year Movement Warranty"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:15:44.713Z"
+    },
+    {
+      "id": "prod-brass-carved-diya",
+      "name": "Artisanal Hand-Carved Brass Peacock Diya (Pair)",
+      "slug": "artisanal-hand-carved-brass-peacock-diya-pair",
+      "sku": "ZC-FST-DIYA02",
+      "shortDescription": "Solid cast brass oil lamps engraved by master artisans with traditional heritage motifs.",
+      "description": "Handcrafted in brass using centuries-old sand-casting methods. Ideal for daily rituals, festive poojas, Diwali, and gifting. Heavyweight base prevents tilting while the antique golden lacquer prevents tarnishing.",
+      "categoryId": "cat-festive-craft",
+      "categorySlug": "festive-and-handmade",
+      "categoryName": "Festive & Handmade Products",
+      "images": [
+        "https://images.unsplash.com/photo-1605651202774-7d573fd3f12d?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1605651202774-7d573fd3f12d?auto=format&fit=crop&w=1000&q=80",
+      "price": 1899,
+      "salePrice": 1599,
+      "currency": "INR",
+      "stock": 30,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": "var-finish",
+          "name": "Finish",
+          "options": [
+            {
+              "label": "Antique Vintage Brass",
+              "priceAdjustment": 0
+            },
+            {
+              "label": "Mirror Polished Gold",
+              "priceAdjustment": 100
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "Handmade",
+        "Diya",
+        "Brass",
+        "Festive"
+      ],
+      "isFeatured": true,
+      "isBestseller": true,
+      "isNewArrival": false,
+      "isPublished": true,
+      "specifications": {
+        "Material": "100% Solid Cast Brass",
+        "Weight": "820 grams (Pair)",
+        "Height": "14 cm each"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    },
+    {
+      "id": "prod-engine-coasters",
+      "name": "Mechanical Head Gasket Laser-Etched Coasters (Set of 4)",
+      "slug": "mechanical-head-gasket-coasters-set-of-4",
+      "sku": "ZC-ACC-CST04",
+      "shortDescription": "Real brushed stainless steel coasters featuring laser-engraved cylinder bore blueprints.",
+      "description": "Protect your coffee table or office desk with motorsport flair. Features non-slip cork base backing to prevent table scratches and absorb condensation.",
+      "categoryId": "cat-auto-acc",
+      "categorySlug": "automotive-accessories",
+      "categoryName": "Automotive Accessories",
+      "images": [
+        "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1000&q=80"
+      ],
+      "primaryImage": "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1000&q=80",
+      "price": 899,
+      "salePrice": 749,
+      "currency": "INR",
+      "stock": 35,
+      "isAvailable": true,
+      "variants": [],
+      "tags": [
+        "Coasters",
+        "Stainless Steel",
+        "Motorsport"
+      ],
+      "isFeatured": false,
+      "isBestseller": false,
+      "isNewArrival": true,
+      "isPublished": true,
+      "specifications": {
+        "Material": "Brushed Stainless Steel 304 with Natural Cork Underlay",
+        "Diameter": "10 cm"
+      },
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-auto-art",
+      "name": "Automotive Wall Art",
+      "slug": "automotive-wall-art",
+      "description": "Laser-cut acrylic silhouettes, formula track outlines, and precision metal automotive wall hangings.",
+      "coverImage": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80",
+      "displayOrder": 1,
+      "isVisible": true,
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    },
+    {
+      "id": "cat-auto-acc",
+      "name": "Automotive Accessories",
+      "slug": "automotive-accessories",
+      "description": "Precision machined tire valve caps, piston paperweights, bespoke keychains, and dashboard idols.",
+      "coverImage": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+      "displayOrder": 2,
+      "isVisible": true,
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    },
+    {
+      "id": "cat-home-decor",
+      "name": "Home & Wall Décor",
+      "slug": "home-and-wall-decor",
+      "description": "Architectural geometric clocks, handcrafted solid wood accents, and minimalist shelf decor.",
+      "coverImage": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
+      "displayOrder": 3,
+      "isVisible": true,
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    },
+    {
+      "id": "cat-festive-craft",
+      "name": "Festive & Handmade Products",
+      "slug": "festive-and-handmade",
+      "description": "Traditional handcrafted pure brass diyas, carved terracotta lamps, and artisanal festive gift sets.",
+      "coverImage": "https://images.unsplash.com/photo-1605651202774-7d573fd3f12d?auto=format&fit=crop&w=800&q=80",
+      "displayOrder": 4,
+      "isVisible": true,
+      "createdAt": "2026-10-17T06:13:01.936Z",
+      "updatedAt": "2026-10-17T06:13:01.936Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord-6cca1f1c-2661-4a1c-b5c5-e3cd25997bbf",
+      "reference": "ZC-20261017-AD5743",
+      "createdAt": "2026-10-17T06:56:01.023Z",
+      "updatedAt": "2026-10-17T06:56:01.043Z",
+      "customer": {
+        "fullName": "Pooja Patel",
+        "phone": "9825012345",
+        "email": "pooja@example.com",
+        "addressLine": "102 Silicon Heights, Satellite Road",
+        "city": "Ahmedabad",
+        "state": "Gujarat",
+        "postalCode": "380015"
+      },
+      "items": [
+        {
+          "productId": "prod-f1-tracks",
+          "productName": "Grand Prix Circuit Wall Art (Set of 6 Tracks)",
+          "productSlug": "grand-prix-circuit-wall-art-set",
+          "sku": "ZC-ART-GP06",
+          "image": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80",
+          "selectedVariants": {
+            "Size": "Medium (25cm each)",
+            "Finish": "Stealth Matte Black"
+          },
+          "quantity": 1,
+          "unitPrice": 1999,
+          "lineTotal": 1999
+        }
+      ],
+      "subtotal": 1999,
+      "shippingFee": 0,
+      "discount": 0,
+      "total": 1999,
+      "currency": "INR",
+      "channel": "whatsapp",
+      "status": "new",
+      "notificationStatus": "whatsapp_prepared",
+      "whatsAppMessageText": "*ZERO CRAFTLABB — NEW ORDER*\n\n*Order Reference:* ZC-20261017-AD5743\n*Order Date:* 17/10/2026, 6:56:01 am\n\n*CUSTOMER DETAILS*\n*Name:* Pooja Patel\n*WhatsApp / Phone:* 9825012345\n*Email:* pooja@example.com\n\n*DELIVERY ADDRESS*\n102 Silicon Heights, Satellite Road\nAhmedabad, Gujarat - 380015\n\n*ORDER ITEMS*\n1. *Grand Prix Circuit Wall Art (Set of 6 Tracks)*\n   SKU: ZC-ART-GP06\n   Variant: Size: Medium (25cm each), Finish: Stealth Matte Black\n   Quantity: 1\n   Unit Price: INR 1,999\n   Line Total: INR 1,999\n\n*ORDER SUMMARY*\nSubtotal: INR 1,999\nShipping: FREE\nDiscount: None\n*Total Amount:* INR 1,999\n\n\n_Please confirm stock availability and dispatch timeline._",
+      "emailDeliveryLog": {
+        "attemptedAt": "2026-10-17T06:56:01.043Z",
+        "success": false,
+        "provider": "none",
+        "customerEmailSent": false,
+        "businessEmailSent": false,
+        "error": "Brevo API key is not configured. Add your Brevo API key in Admin Settings > Email Configuration or environment variables."
+      }
+    },
+    {
+      "id": "ord-da6801e8-c170-4bc7-ae38-a8ff080217ca",
+      "reference": "ZC-20261017-94C6CD",
+      "createdAt": "2026-10-17T06:15:44.693Z",
+      "updatedAt": "2026-10-17T06:41:59.590Z",
+      "customer": {
+        "fullName": "asc",
+        "phone": "1234567890",
+        "email": "d@gmail.com",
+        "addressLine": "a3s4d5f6g78",
+        "city": "cdfu",
+        "state": "Karnataka",
+        "postalCode": "345688"
+      },
+      "items": [
+        {
+          "productId": "prod-wooden-geometric-clock",
+          "productName": "Kinetic Geometric Teakwood Wall Clock",
+          "productSlug": "kinetic-geometric-teakwood-wall-clock",
+          "sku": "ZC-DEC-CLK01",
+          "image": "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?auto=format&fit=crop&w=1000&q=80",
+          "selectedVariants": {
+            "Diameter": "12-inch (30cm)"
+          },
+          "quantity": 2,
+          "unitPrice": 2499,
+          "lineTotal": 4998
+        }
+      ],
+      "subtotal": 4998,
+      "shippingFee": 0,
+      "discount": 0,
+      "total": 4998,
+      "currency": "INR",
+      "channel": "whatsapp",
+      "status": "new",
+      "notificationStatus": "email_failed",
+      "whatsAppMessageText": "*ZERO CRAFTLABB — NEW ORDER*\n\n*Order Reference:* ZC-20261017-94C6CD\n*Order Date:* 17/10/2026, 6:15:44 am\n\n*CUSTOMER DETAILS*\n*Name:* asc\n*WhatsApp / Phone:* 1234567890\n*Email:* d@gmail.com\n\n*DELIVERY ADDRESS*\na3s4d5f6g78\ncdfu, Karnataka - 345688\n\n*ORDER ITEMS*\n1. *Kinetic Geometric Teakwood Wall Clock*\n   SKU: ZC-DEC-CLK01\n   Variant: Diameter: 12-inch (30cm)\n   Quantity: 2\n   Unit Price: INR 2,499\n   Line Total: INR 4,998\n\n*ORDER SUMMARY*\nSubtotal: INR 4,998\nShipping: FREE\nDiscount: None\n*Total Amount:* INR 4,998\n\n\n_Please confirm stock availability and dispatch timeline._",
+      "emailDeliveryLog": {
+        "attemptedAt": "2026-10-17T06:41:59.590Z",
+        "success": false,
+        "error": "RESEND_API_KEY environment variable is not configured. Email logged to database for manual dispatch or retry upon adding API key."
+      }
+    },
+    {
+      "id": "ord-810c198d-31cc-4165-8b79-5225681fdd20",
+      "reference": "ZC-20261017-2B99A5",
+      "createdAt": "2026-10-17T06:13:11.620Z",
+      "updatedAt": "2026-10-17T06:13:11.629Z",
+      "customer": {
+        "fullName": "Aarav Sharma",
+        "phone": "9876543210",
+        "email": "aarav@example.com",
+        "addressLine": "Flat 402, Lotus Residency",
+        "city": "Bengaluru",
+        "state": "Karnataka",
+        "postalCode": "560001"
+      },
+      "items": [
+        {
+          "productId": "prod-machined-valve-caps",
+          "productName": "Billet Aluminium Knurled Tire Valve Stem Caps (Set of 4)",
+          "productSlug": "billet-aluminium-knurled-tire-valve-caps",
+          "sku": "ZC-ACC-VLV04",
+          "image": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80",
+          "selectedVariants": {
+            "Anodized Color": "Electric Indigo Blue"
+          },
+          "quantity": 1,
+          "unitPrice": 549,
+          "lineTotal": 549
+        }
+      ],
+      "subtotal": 549,
+      "shippingFee": 99,
+      "discount": 0,
+      "total": 648,
+      "currency": "INR",
+      "channel": "whatsapp",
+      "status": "new",
+      "notificationStatus": "whatsapp_prepared",
+      "whatsAppMessageText": "*ZERO CRAFTLABB — NEW ORDER*\n\n*Order Reference:* ZC-20261017-2B99A5\n*Order Date:* 17/10/2026, 6:13:11 am\n\n*CUSTOMER DETAILS*\n*Name:* Aarav Sharma\n*WhatsApp / Phone:* 9876543210\n*Email:* aarav@example.com\n\n*DELIVERY ADDRESS*\nFlat 402, Lotus Residency\nBengaluru, Karnataka - 560001\n\n*ORDER ITEMS*\n1. *Billet Aluminium Knurled Tire Valve Stem Caps (Set of 4)*\n   SKU: ZC-ACC-VLV04\n   Variant: Anodized Color: Electric Indigo Blue\n   Quantity: 1\n   Unit Price: INR 549\n   Line Total: INR 549\n\n*ORDER SUMMARY*\nSubtotal: INR 549\nShipping: INR 99\nDiscount: None\n*Total Amount:* INR 648\n\n\n_Please confirm stock availability and dispatch timeline._"
+    }
+  ],
+  "settings": {
+    "brand": {
+      "name": "Zero Craftlabb",
+      "tagline": "Precision Automotive Art & Handcrafted Creations",
+      "logoUrl": "/uploads/1792219338082-33b4a3a4.svg",
+      "primaryColor": "#17191F",
+      "accentColor": "#5B5FEF"
+    },
+    "contact": {
+      "whatsappNumber": "917434059734",
+      "displayPhone": "+91 74340 59734",
+      "businessOrderEmail": "ompatel787877@gmail.com",
+      "publicContactEmail": "zero.univrs@gmail.com",
+      "address": "Zero Craftlabb Studio, ",
+      "instagramUrl": "https://instagram.com/zerocraftlabb"
+    },
+    "announcement": {
+      "enabled": true,
+      "text": "✨ Handcrafted in India • Free shipping on orders over ₹1,499 • Easy WhatsApp & Email Ordering",
+      "linkUrl": "/shop"
+    },
+    "hero": {
+      "title": "Automotive Precision Meets Master Craftsmanship",
+      "subtitle": "From iconic race track wall silhouettes to hand-carved festive brass decor, bring engineering passion and artisanal soul into your space.",
+      "ctaPrimaryText": "Explore Catalog",
+      "ctaPrimaryLink": "/shop",
+      "ctaSecondaryText": "Order via WhatsApp",
+      "ctaSecondaryLink": "/shop",
+      "backgroundImageUrl": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1920&q=80"
+    },
+    "commerce": {
+      "currencySymbol": "₹",
+      "currencyCode": "INR",
+      "freeShippingThreshold": 1499,
+      "standardShippingFee": 99,
+      "enableWhatsAppOrders": true,
+      "enableEmailOrders": true,
+      "allowInternationalOrders": false,
+      "orderPrefix": "ZC"
+    },
+    "policies": {
+      "shippingPolicy": "We ship across all pin codes in India via express courier. Orders are handcrafted and dispatched within 2–3 business days. Delivery typically takes 4–6 business days.",
+      "returnsPolicy": "Because our automotive wall art and wooden decor pieces are made to order, returns are accepted within 7 days of delivery only for damaged, defective, or incorrect items.",
+      "privacyPolicy": "Zero Craftlabb respects your privacy. We only collect your contact and delivery details to fulfill your order and communicate updates. We never share or sell customer data.",
+      "termsAndConditions": "By placing an order via WhatsApp or Email, you agree that final order confirmation, shipping cost calculations (if applicable), and tracking details will be communicated via direct business messaging.",
+      "aboutUsStory": "Zero Craftlabb was born from an obsession with automotive aesthetics, high-grade metals, fine woodwork, and Indian festive craftsmanship. Every piece is designed and produced with meticulous care."
+    },
+    "seo": {
+      "siteTitle": "Zero Craftlabb — Automotive Wall Art & Handcrafted Décor",
+      "metaDescription": "Shop handcrafted automotive wall art, racing track silhouettes, brass accessories, wooden home decor, and festive diyas at Zero Craftlabb."
+    }
+  },
+  "admins": [
+    {
+      "id": "admin-master",
+      "username": "admin",
+      "email": "admin@zerocraftlabb.com",
+      "role": "superadmin",
+      "passwordHash": "0baa94da621a2b0459f5ced0140c4d183e9dfd1b59f32c47de3ff96e8b306c70fee8a856cfe7d8021e7a3e5318ccbdecd4b1156cb9ebac275e118b92631bc8ae",
+      "salt": "d1937b62bb3cb3d47e8782d6239791ee",
+      "createdAt": "2026-10-17T06:57:15.975Z",
+      "lastLoginAt": "2026-10-17T06:57:47.834Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "ea932271-3ed4-4ea1-8634-d2107fb1cbf8",
+      "timestamp": "2026-10-17T06:57:47.857Z",
+      "action": "SETTINGS_UPDATED",
+      "details": "Website settings modified",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "01e7f1a8-a229-4e29-8a27-f8b3cebef998",
+      "timestamp": "2026-10-17T06:57:47.834Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "3488d161-54ff-4f52-bac8-b738bcbe195d",
+      "timestamp": "2026-10-17T06:57:42.646Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "5b028d31-a7a5-4e9c-ab95-132ebc1021ad",
+      "timestamp": "2026-10-17T06:57:37.256Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "b5c027c8-8679-415d-ae82-6cda7f8f0096",
+      "timestamp": "2026-10-17T06:56:01.043Z",
+      "action": "ORDER_PLACED",
+      "details": "New order ZC-20261017-AD5743 via whatsapp",
+      "user": "pooja@example.com"
+    },
+    {
+      "id": "59a34986-1691-4112-9ef3-dbb8ec462c3d",
+      "timestamp": "2026-10-17T06:44:08.020Z",
+      "action": "PASSWORD_CHANGED",
+      "details": "Admin admin@zerocraftlabb.com updated password",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "e58b1076-b7e0-4c16-8011-7329d1d79d3b",
+      "timestamp": "2026-10-17T06:43:36.105Z",
+      "action": "SETTINGS_UPDATED",
+      "details": "Website settings modified",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "fd6912de-9f67-4229-b140-670e6f7b24d3",
+      "timestamp": "2026-10-17T06:16:48.459Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "b2bf62b1-79e8-4d1c-bd60-481fdeb011fc",
+      "timestamp": "2026-10-17T06:15:44.714Z",
+      "action": "ORDER_PLACED",
+      "details": "New order ZC-20261017-94C6CD via whatsapp",
+      "user": "d@gmail.com"
+    },
+    {
+      "id": "20be5c2d-5051-4391-8103-84a922411e54",
+      "timestamp": "2026-10-17T06:13:15.147Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "ca1e4c03-4910-4a17-b0b9-1b7836bd63a9",
+      "timestamp": "2026-10-17T06:13:11.630Z",
+      "action": "ORDER_PLACED",
+      "details": "New order ZC-20261017-2B99A5 via whatsapp",
+      "user": "aarav@example.com"
+    },
+    {
+      "id": "bec12b95-2cae-40df-ac0d-9de2f2f952d7",
+      "timestamp": "2026-10-17T06:13:02.025Z",
+      "action": "DATABASE_INITIALIZED",
+      "details": "Initial database created with Zero Craftlabb products and settings."
+    }
+  ]
+}
