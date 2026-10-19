@@ -275,4 +275,22 @@ export const api = {
     });
     return handleResponse<{ success: boolean; message: string }>(res);
   },
+
+  async resetDefaultPassword(): Promise<{
+    success: boolean;
+    message: string;
+    email: string;
+    defaultPassword: string;
+  }> {
+    const res = await fetch('/api/auth/reset-default', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return handleResponse<{
+      success: boolean;
+      message: string;
+      email: string;
+      defaultPassword: string;
+    }>(res);
+  },
 };

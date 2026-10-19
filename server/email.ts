@@ -1,8 +1,9 @@
+import nodemailer from 'nodemailer';
 import { Order, WebsiteSettings } from '../src/types/index.ts';
 
 export interface DualEmailSendResult {
   success: boolean;
-  provider: 'brevo' | 'none';
+  provider: 'brevo' | 'smtp' | 'none';
   customerEmailSent: boolean;
   businessEmailSent: boolean;
   error?: string;
@@ -273,6 +274,24 @@ export function generateBusinessNotificationHtml(order: Order, settings: Website
 // BREVO & RESEND DISPATCHERS
 // ==========================================
 
+// Helper to format Brevo error messages into actionable instructions
+function formatBrevoError(rawError: string): string {
+  if (
+    rawError.includes('unrecognised IP address') ||
+    rawError.includes('authorised_ips') ||
+    rawError.includes('unrecognized IP')
+  ) {
+    return 'Brevo Security Restriction: Brevo blocked this request because "Authorised IP addresses" is active on your Brevo account. To fix in 10 seconds: Open https://app.brevo.com/security/authorised_ips and disable "Authorised IP addresses" so Brevo accepts API calls from your hosting server.';
+  }
+  if (rawError.includes('Key not found') || rawError.includes('unauthorized')) {
+    return 'Brevo Error: Invalid API key. Please check your Brevo API key under SMTP & API in your Brevo dashboard.';
+  }
+  if (rawError.includes('sender') || rawError.includes('not verified')) {
+    return 'Brevo Error: Sender email is not verified. Please verify your sender email under Senders & IP in Brevo.';
+  }
+  return rawError;
+}
+
 async function sendViaBrevo(params: {
   apiKey: string;
   sender: { name: string; email: string };
@@ -296,35 +315,136 @@ async function sendViaBrevo(params: {
       }),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok && (data.messageId || data.messageIds)) {
       return {
         success: true,
         messageId: data.messageId || data.messageIds?.[0],
       };
     } else {
+      const errStr = data.message || JSON.stringify(data);
       return {
         success: false,
-        error: data.message || JSON.stringify(data),
+        error: formatBrevoError(errStr),
       };
     }
   } catch (err: any) {
     return {
       success: false,
-      error: err.message || 'Network failure connecting to Brevo API',
+      error: formatBrevoError(err.message || 'Network failure connecting to Brevo API'),
+    };
+  }
+}
+
+async function sendViaSmtp(params: {
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+  secure?: boolean;
+  from: { name: string; email: string };
+  to: string;
+  subject: string;
+  html: string;
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: params.host,
+      port: params.port,
+      secure: params.secure ?? (params.port === 465),
+      auth: {
+        user: params.user,
+        pass: params.pass,
+      },
+      connectionTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: `"${params.from.name}" <${params.from.email}>`,
+      to: params.to,
+      subject: params.subject,
+      html: params.html,
+    });
+
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: `SMTP Dispatch Error: ${err.message}`,
     };
   }
 }
 
 // ==========================================
-// MASTER DUAL DISPATCH FUNCTION (BREVO API)
+// MASTER DUAL DISPATCH FUNCTION
 // ==========================================
 
 export async function sendDualOrderEmails(
   order: Order,
   settings: WebsiteSettings
 ): Promise<DualEmailSendResult> {
-  // Check Brevo credentials (from settings first, then multiple env var aliases)
+  const customerHtml = generateCustomerConfirmationHtml(order, settings);
+  const businessHtml = generateBusinessNotificationHtml(order, settings);
+  const customerEmail = order.customer.email;
+  const businessEmail = settings.contact.businessOrderEmail;
+
+  // 1. Check SMTP Configuration
+  const smtpHost = settings.emailConfig?.smtpHost || process.env.SMTP_HOST || '';
+  const smtpPort = Number(settings.emailConfig?.smtpPort || process.env.SMTP_PORT) || 587;
+  const smtpUser = settings.emailConfig?.smtpUser || process.env.SMTP_USER || '';
+  const smtpPass = settings.emailConfig?.smtpPass || process.env.SMTP_PASS || '';
+
+  if (smtpHost && smtpUser && smtpPass) {
+    const senderName = settings.emailConfig?.brevoSenderName || settings.brand.name || 'Zero Craftlabb';
+    const senderEmail = settings.emailConfig?.brevoSenderEmail || smtpUser || businessEmail;
+
+    // Customer receipt
+    const custRes = await sendViaSmtp({
+      host: smtpHost,
+      port: smtpPort,
+      user: smtpUser,
+      pass: smtpPass,
+      secure: settings.emailConfig?.smtpSecure,
+      from: { name: senderName, email: senderEmail },
+      to: customerEmail,
+      subject: `✨ Order Confirmation: ${order.reference} — ${settings.brand.name}`,
+      html: customerHtml,
+    });
+
+    // Business alert
+    const bizRes = await sendViaSmtp({
+      host: smtpHost,
+      port: smtpPort,
+      user: smtpUser,
+      pass: smtpPass,
+      secure: settings.emailConfig?.smtpSecure,
+      from: { name: `${settings.brand.name} Orders`, email: senderEmail },
+      to: businessEmail,
+      subject: `🚨 [${order.channel.toUpperCase()} ORDER] ${order.reference} - ${order.customer.fullName} (${settings.commerce.currencySymbol}${order.total})`,
+      html: businessHtml,
+    });
+
+    const anySuccess = custRes.success || bizRes.success;
+    const errors: string[] = [];
+    if (!custRes.success) errors.push(`Customer email: ${custRes.error}`);
+    if (!bizRes.success) errors.push(`Business email: ${bizRes.error}`);
+
+    return {
+      success: anySuccess,
+      provider: 'smtp',
+      customerEmailSent: custRes.success,
+      businessEmailSent: bizRes.success,
+      error: errors.length > 0 ? errors.join(' | ') : undefined,
+    };
+  }
+
+  // 2. Check Brevo API Configuration
   const rawBrevoApiKey =
     settings.emailConfig?.brevoApiKey ||
     process.env.BREVO_API_KEY ||
@@ -340,7 +460,7 @@ export async function sendDualOrderEmails(
     process.env.BREVO_SENDER_EMAIL ||
     process.env.BREVO_FROM_EMAIL ||
     settings.contact.businessOrderEmail ||
-    'orders@zerocraftlabb.com'
+    'ompatel787877@gmail.com'
   ).trim().replace(/^["']|["']$/g, '');
 
   const brevoSenderName = (
@@ -351,14 +471,7 @@ export async function sendDualOrderEmails(
     'Zero Craftlabb'
   ).trim().replace(/^["']|["']$/g, '');
 
-  const businessEmail = settings.contact.businessOrderEmail;
-  const customerEmail = order.customer.email;
-
-  // If Brevo API key is available
   if (brevoApiKey) {
-    const customerHtml = generateCustomerConfirmationHtml(order, settings);
-    const businessHtml = generateBusinessNotificationHtml(order, settings);
-
     // Dispatch 1: To Customer
     const custRes = await sendViaBrevo({
       apiKey: brevoApiKey,
@@ -368,7 +481,7 @@ export async function sendDualOrderEmails(
       htmlContent: customerHtml,
     });
 
-    // Dispatch 2: To Business Owner (even if ordered via WhatsApp!)
+    // Dispatch 2: To Business Owner
     const bizRes = await sendViaBrevo({
       apiKey: brevoApiKey,
       sender: { name: `${settings.brand.name} Orders`, email: brevoSenderEmail },
@@ -391,14 +504,14 @@ export async function sendDualOrderEmails(
     };
   }
 
-  // No Brevo API key configured
-  console.log(`[Email Service] Brevo API key not configured yet. Order ${order.reference} logged.`);
+  // Neither configured
   return {
     success: false,
     provider: 'none',
     customerEmailSent: false,
     businessEmailSent: false,
-    error: 'Brevo API key is not configured. Add your Brevo API key in Admin Settings or Vercel Environment Variables (BREVO_API_KEY).',
+    error:
+      'Email integration is not fully configured. Enter your Brevo API key or custom SMTP in Admin Settings > Email Configuration.',
   };
 }
 
@@ -410,6 +523,47 @@ export async function sendTestEmail(
   targetEmail: string,
   settings: WebsiteSettings
 ): Promise<{ success: boolean; provider: string; message?: string; error?: string }> {
+  // 1. Test SMTP if configured
+  const smtpHost = settings.emailConfig?.smtpHost || process.env.SMTP_HOST || '';
+  const smtpPort = Number(settings.emailConfig?.smtpPort || process.env.SMTP_PORT) || 587;
+  const smtpUser = settings.emailConfig?.smtpUser || process.env.SMTP_USER || '';
+  const smtpPass = settings.emailConfig?.smtpPass || process.env.SMTP_PASS || '';
+
+  if (smtpHost && smtpUser && smtpPass) {
+    const senderName = settings.emailConfig?.brevoSenderName || settings.brand.name || 'Zero Craftlabb';
+    const senderEmail = settings.emailConfig?.brevoSenderEmail || smtpUser || settings.contact.businessOrderEmail;
+
+    const res = await sendViaSmtp({
+      host: smtpHost,
+      port: smtpPort,
+      user: smtpUser,
+      pass: smtpPass,
+      secure: settings.emailConfig?.smtpSecure,
+      from: { name: senderName, email: senderEmail },
+      to: targetEmail,
+      subject: `✅ SMTP Email Test Successful — ${settings.brand.name}`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; background: #F7F5F0; color: #17191F;">
+          <div style="max-width: 500px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; border: 1px solid #E7E3D8;">
+            <h2 style="color: #25D366; margin-top: 0;">🎉 SMTP Email Integration Operational!</h2>
+            <p>Your SMTP mail server (${smtpHost}) is sending emails successfully for <strong>${settings.brand.name}</strong>.</p>
+            <p style="font-size: 13px; color: #52525B;">
+              Order notifications will be delivered reliably to both customers and your business email (${settings.contact.businessOrderEmail}).
+            </p>
+          </div>
+        </div>
+      `,
+    });
+
+    return {
+      success: res.success,
+      provider: 'SMTP',
+      message: res.success ? `Test email dispatched to ${targetEmail} via SMTP (${smtpHost})!` : undefined,
+      error: res.error,
+    };
+  }
+
+  // 2. Test Brevo API
   const rawBrevoApiKey =
     settings.emailConfig?.brevoApiKey ||
     process.env.BREVO_API_KEY ||
@@ -425,7 +579,7 @@ export async function sendTestEmail(
     process.env.BREVO_SENDER_EMAIL ||
     process.env.BREVO_FROM_EMAIL ||
     settings.contact.businessOrderEmail ||
-    'orders@zerocraftlabb.com'
+    'ompatel787877@gmail.com'
   ).trim().replace(/^["']|["']$/g, '');
 
   const brevoSenderName = (
@@ -458,7 +612,7 @@ export async function sendTestEmail(
     return {
       success: res.success,
       provider: 'Brevo',
-      message: res.success ? `Test email dispatched to ${targetEmail} via Brevo!` : undefined,
+      message: res.success ? `Test email dispatched to ${targetEmail} via Brevo API!` : undefined,
       error: res.error,
     };
   }
@@ -466,6 +620,8 @@ export async function sendTestEmail(
   return {
     success: false,
     provider: 'none',
-    error: 'No Brevo API key configured yet. Please enter your Brevo API key (starts with xkeysib-) and click Save Settings.',
+    error:
+      'No Brevo API key or SMTP credentials configured yet. Please configure your email service in Admin Settings.',
   };
 }
+

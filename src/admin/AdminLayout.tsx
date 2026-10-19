@@ -26,7 +26,14 @@ export const AdminLayout: React.FC = () => {
   useEffect(() => {
     const token = authStorage.getToken();
     if (!token) {
-      navigate('/admin/login', { replace: true });
+      const redirect = encodeURIComponent(location.pathname + location.search);
+      navigate(`/admin/login?redirect=${redirect}`, { replace: true });
+      return;
+    }
+
+    // If currentUser is already loaded, skip re-verification on route switch
+    if (currentUser) {
+      setLoading(false);
       return;
     }
 
@@ -38,9 +45,10 @@ export const AdminLayout: React.FC = () => {
       .catch((err) => {
         console.error('Admin session invalid:', err);
         authStorage.clearToken();
-        navigate('/admin/login', { replace: true });
+        const redirect = encodeURIComponent(location.pathname + location.search);
+        navigate(`/admin/login?redirect=${redirect}`, { replace: true });
       });
-  }, [navigate]);
+  }, [navigate, location.pathname, location.search, currentUser]);
 
   const handleLogout = async () => {
     await api.logout();

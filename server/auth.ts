@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
-import { db, verifyPassword } from './db.ts';
+import { db } from './db.ts';
+
+const SESSION_SECRET =
+  process.env.ADMIN_SESSION_SECRET ||
+  process.env.SESSION_SECRET ||
+  'zero-craftlabb-session-secret-key-2026-x9094-stable';
 
 interface AdminSession {
   token: string;
@@ -10,10 +15,10 @@ interface AdminSession {
   expiresAt: number;
 }
 
-// In-memory sessions map
+// Memory cache for active sessions
 const sessions = new Map<string, AdminSession>();
 
-// Rate limiting for login
+// Rate limiting for login attempts
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 
 export function checkLoginRateLimit(ip: string): boolean {
@@ -27,7 +32,7 @@ export function checkLoginRateLimit(ip: string): boolean {
     loginAttempts.set(ip, { count: 1, resetAt: now + 15 * 60 * 1000 });
     return true;
   }
-  if (attempt.count >= 10) {
+  if (attempt.count >= 15) {
     return false;
   }
   attempt.count++;
@@ -39,34 +44,93 @@ export function clearLoginAttempts(ip: string) {
 }
 
 export function createAdminSession(adminId: string, email: string): string {
-  const token = crypto.randomBytes(32).toString('hex');
   const now = Date.now();
-  const expiresAt = now + 7 * 24 * 60 * 60 * 1000; // 7 days
+  const expiresAt = now + 30 * 24 * 60 * 60 * 1000; // 30 days validity
 
-  sessions.set(token, {
-    token,
+  const payload = {
     adminId,
-    email,
+    email: email.toLowerCase(),
     createdAt: now,
     expiresAt,
-  });
+    salt: crypto.randomBytes(8).toString('hex'),
+  };
 
+  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto
+    .createHmac('sha256', SESSION_SECRET)
+    .update(payloadB64)
+    .digest('base64url');
+
+  const token = `${payloadB64}.${signature}`;
+
+  const session: AdminSession = {
+    token,
+    adminId,
+    email: email.toLowerCase(),
+    createdAt: now,
+    expiresAt,
+  };
+
+  sessions.set(token, session);
   return token;
 }
 
 export function validateAdminSession(token: string): AdminSession | null {
   if (!token) return null;
-  const session = sessions.get(token);
-  if (!session) return null;
-  if (Date.now() > session.expiresAt) {
-    sessions.delete(token);
-    return null;
+  const cleanToken = token.trim();
+
+  // 1. Check in-memory cache
+  const cached = sessions.get(cleanToken);
+  if (cached) {
+    if (Date.now() > cached.expiresAt) {
+      sessions.delete(cleanToken);
+      return null;
+    }
+    return cached;
   }
-  return session;
+
+  // 2. Cryptographic signature check (persists across server restarts & Vercel lambdas)
+  try {
+    const parts = cleanToken.split('.');
+    if (parts.length === 2) {
+      const [payloadB64, signature] = parts;
+      const expectedSig = crypto
+        .createHmac('sha256', SESSION_SECRET)
+        .update(payloadB64)
+        .digest('base64url');
+
+      const sigBuf = Buffer.from(signature);
+      const expBuf = Buffer.from(expectedSig);
+
+      if (sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf)) {
+        const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf-8'));
+        if (Date.now() <= payload.expiresAt) {
+          const admin = db.getAdminById(payload.adminId) || db.getAdminByEmail(payload.email);
+          if (admin) {
+            const session: AdminSession = {
+              token: cleanToken,
+              adminId: admin.id,
+              email: admin.email,
+              createdAt: payload.createdAt,
+              expiresAt: payload.expiresAt,
+            };
+            sessions.set(cleanToken, session);
+            return session;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    // invalid token format
+  }
+
+  return null;
 }
 
 export function invalidateSession(token: string) {
-  sessions.delete(token);
+  if (token) {
+    sessions.delete(token.trim());
+  }
 }
 
 export interface AuthenticatedRequest extends Request {
@@ -94,3 +158,4 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
   req.adminSession = session;
   next();
 }
+

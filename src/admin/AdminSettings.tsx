@@ -288,124 +288,226 @@ export const AdminSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* 2.1 Automated Email Configuration (Brevo / Resend) */}
+        {/* 2.1 Automated Email Configuration (Brevo / SMTP) */}
         <div className="bg-white rounded-2xl border border-[#E7E3D8] p-6 space-y-5">
-          <div className="flex items-center justify-between border-b border-[#E7E3D8] pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E7E3D8] pb-3 gap-2">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-[#5B5FEF]/10 text-[#5B5FEF] flex items-center justify-center font-bold">
                 ✉️
               </div>
               <div>
                 <h2 className="text-base font-extrabold text-[#17191F]">
-                  Automated Order Emails &amp; Brevo API Setup
+                  Automated Order Emails Configuration
                 </h2>
                 <p className="text-xs text-zinc-500">
-                  Sends automatic order receipts to customers and order alerts to your inbox for ALL orders.
+                  Sends automatic order receipts to customers and instant order alerts to your business inbox.
                 </p>
               </div>
             </div>
 
-            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-              300 Free Emails/Day via Brevo
+            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 self-start sm:self-auto">
+              Brevo API &amp; SMTP Supported
             </span>
           </div>
 
-          {/* Explanation Alert */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed space-y-1.5">
-            <div className="font-bold flex items-center gap-1.5">
-              <span>💡 How Brevo Automated Emailing Works:</span>
+          {/* Important Brevo IP Fix Notice Banner */}
+          <div className="p-4 bg-amber-50/90 border border-amber-300 rounded-xl text-xs text-amber-950 leading-relaxed space-y-2">
+            <div className="font-bold flex items-center gap-1.5 text-amber-900">
+              <AlertCircle size={16} className="text-amber-600 shrink-0" />
+              <span>Brevo Security Requirement for Cloud &amp; Hosting Servers:</span>
             </div>
-            <div>
-              1. <strong>Customer Receipt:</strong> As soon as a customer orders, they automatically receive an itemized email with your brand logo, ordered items, chosen variants, delivery address, and tracking instructions.
-            </div>
-            <div>
-              2. <strong>Your Notification:</strong> You also instantly receive an email at <strong>{formData.contact.businessOrderEmail}</strong> with full order details, customer contact info, and a 1-click WhatsApp customer button — <em>even when the customer orders via WhatsApp!</em>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Brevo API Key *
-              </label>
-              <input
-                type="text"
-                value={formData.emailConfig?.brevoApiKey || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emailConfig: {
-                      ...(formData.emailConfig || { provider: 'brevo' }),
-                      provider: 'brevo',
-                      brevoApiKey: e.target.value.trim(),
-                    },
-                  })
-                }
-                placeholder="xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm font-mono focus:outline-none focus:border-[#5B5FEF]"
-              />
-              <p className="text-[10px] text-zinc-500 mt-1">
-                From: <strong>Brevo Dashboard &rarr; SMTP &amp; API &rarr; API Keys</strong>
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Sender Name (Inbox)
-              </label>
-              <input
-                type="text"
-                value={formData.emailConfig?.brevoSenderName || formData.brand.name}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emailConfig: {
-                      ...(formData.emailConfig || { provider: 'brevo' }),
-                      provider: 'brevo',
-                      brevoSenderName: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Zero Craftlabb"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none"
-              />
-              <p className="text-[10px] text-zinc-500 mt-1">
-                Displayed sender name on customer receipts.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
-                Brevo Verified Sender Email *
-              </label>
-              <input
-                type="email"
-                value={formData.emailConfig?.brevoSenderEmail || formData.contact.businessOrderEmail}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emailConfig: {
-                      ...(formData.emailConfig || { provider: 'brevo' }),
-                      provider: 'brevo',
-                      brevoSenderEmail: e.target.value.trim(),
-                    },
-                  })
-                }
-                placeholder="ompatel787877@gmail.com"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none focus:border-[#5B5FEF]"
-              />
-              <p className="text-[10px] text-zinc-500 mt-1">
-                Your verified sender address in your Brevo account.
-              </p>
+            <p className="text-[11px] text-amber-900 leading-normal">
+              If Brevo reports an <strong>"unrecognised IP address"</strong> error, this is a security setting inside your Brevo account. Because cloud hosting servers (Vercel, Cloud Run) change IPs dynamically, you must disable the IP restriction:
+            </p>
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              <a
+                href="https://app.brevo.com/security/authorised_ips"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-xs transition-colors"
+              >
+                <span>Open Brevo Authorised IPs</span>
+                <ExternalLink size={12} />
+              </a>
+              <span className="text-[11px] text-amber-800 font-medium">
+                &rarr; Turn OFF / delete all entries in "Authorised IP addresses". Emails will then send instantly!
+              </span>
             </div>
           </div>
 
-          {/* Brevo Quick Setup Steps Box */}
-          <div className="bg-[#F7F5F0] p-4 rounded-xl border border-[#E7E3D8] text-xs text-zinc-600 space-y-1">
-            <span className="font-bold text-[#17191F] block">Quick Steps to Get Your Free Brevo Key:</span>
-            <div>1. Go to <a href="https://app.brevo.com" target="_blank" rel="noopener noreferrer" className="text-[#5B5FEF] font-bold underline inline-flex items-center gap-0.5">brevo.com <ExternalLink size={10} /></a> and create a free account (300 free emails/day).</div>
-            <div>2. Click your account name at top right &rarr; <strong>SMTP &amp; API</strong> &rarr; <strong>API Keys</strong> &rarr; Click <strong>Generate a new API key</strong>.</div>
-            <div>3. Copy the key (starts with <code className="bg-zinc-200 px-1 py-0.5 rounded font-mono">xkeysib-</code>), paste it into the field above, and click <strong>Save All Settings</strong>!</div>
+          {/* Provider Selection & Method */}
+          <div className="border border-zinc-200 rounded-xl p-4 bg-zinc-50/50 space-y-4">
+            <h3 className="text-xs font-bold uppercase text-zinc-800 tracking-wider">
+              Method 1: Brevo API (Recommended &amp; 300 Free Emails/Day)
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  Brevo API Key
+                </label>
+                <input
+                  type="text"
+                  value={formData.emailConfig?.brevoApiKey || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        brevoApiKey: e.target.value.trim(),
+                      },
+                    })
+                  }
+                  placeholder="xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-white text-xs font-mono focus:outline-none focus:border-[#5B5FEF]"
+                />
+                <p className="text-[10px] text-zinc-500 mt-1">
+                  From: Brevo Dashboard &rarr; SMTP &amp; API &rarr; API Keys
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  Sender Name
+                </label>
+                <input
+                  type="text"
+                  value={formData.emailConfig?.brevoSenderName || formData.brand.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        brevoSenderName: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="Zero Craftlabb"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+                <p className="text-[10px] text-zinc-500 mt-1">
+                  Sender name displayed on customer receipts.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  Verified Sender Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.emailConfig?.brevoSenderEmail || formData.contact.businessOrderEmail}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        brevoSenderEmail: e.target.value.trim(),
+                      },
+                    })
+                  }
+                  placeholder="ompatel787877@gmail.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+                <p className="text-[10px] text-zinc-500 mt-1">
+                  Must be verified in your Brevo account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Alternative Method 2: Custom SMTP / Gmail */}
+          <div className="border border-zinc-200 rounded-xl p-4 bg-zinc-50/50 space-y-4">
+            <h3 className="text-xs font-bold uppercase text-zinc-800 tracking-wider">
+              Method 2: Custom SMTP / Gmail App Password (Optional Alternative)
+            </h3>
+            <p className="text-[11px] text-zinc-500">
+              You can also send emails directly via Gmail SMTP (<code className="bg-zinc-200 px-1 py-0.5 rounded font-mono">smtp.gmail.com:587</code> with Google App Password) or any custom SMTP server.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  SMTP Host
+                </label>
+                <input
+                  type="text"
+                  value={formData.emailConfig?.smtpHost || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        smtpHost: e.target.value.trim(),
+                      },
+                    })
+                  }
+                  placeholder="smtp.gmail.com"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  SMTP Port
+                </label>
+                <input
+                  type="number"
+                  value={formData.emailConfig?.smtpPort || 587}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        smtpPort: Number(e.target.value),
+                      },
+                    })
+                  }
+                  placeholder="587"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  SMTP Username
+                </label>
+                <input
+                  type="text"
+                  value={formData.emailConfig?.smtpUser || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        smtpUser: e.target.value.trim(),
+                      },
+                    })
+                  }
+                  placeholder="you@gmail.com"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                  SMTP Password / App Key
+                </label>
+                <input
+                  type="password"
+                  value={formData.emailConfig?.smtpPass || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emailConfig: {
+                        ...(formData.emailConfig || {}),
+                        smtpPass: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="16-character App Password"
+                  className="w-full px-3 py-2 rounded-xl border border-[#E7E3D8] bg-white text-xs focus:outline-none focus:border-[#5B5FEF]"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Test Email Dispatch Tool */}
@@ -442,17 +544,24 @@ export const AdminSettings: React.FC = () => {
             </div>
 
             {testEmailResult && (
-              <div className={`mt-3 p-3 rounded-xl text-xs font-semibold flex items-start gap-2 ${
-                testEmailResult.success
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
+              <div
+                className={`mt-3 p-3.5 rounded-xl text-xs font-medium leading-relaxed flex items-start gap-2.5 ${
+                  testEmailResult.success
+                    ? 'bg-emerald-50 text-emerald-900 border border-emerald-300'
+                    : 'bg-red-50 text-red-900 border border-red-300'
+                }`}
+              >
                 {testEmailResult.success ? (
-                  <Check size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                  <Check size={18} className="text-emerald-600 shrink-0 mt-0.5" />
                 ) : (
-                  <AlertCircle size={16} className="text-red-600 shrink-0 mt-0.5" />
+                  <AlertCircle size={18} className="text-red-600 shrink-0 mt-0.5" />
                 )}
-                <span>{testEmailResult.message}</span>
+                <div className="flex-1 space-y-1">
+                  <div className="font-bold">
+                    {testEmailResult.success ? 'Email Sent Successfully!' : 'Email Delivery Issue'}
+                  </div>
+                  <div>{testEmailResult.message}</div>
+                </div>
               </div>
             )}
           </div>

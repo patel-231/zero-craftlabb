@@ -63,10 +63,28 @@ export const AdminCategories: React.FC = () => {
     setModalOpen(true);
   };
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleToggleVisibility = async (cat: Category) => {
+    try {
+      await api.updateCategory(cat.id, { isVisible: !cat.isVisible });
+      showToast(`Category "${cat.name}" is now ${!cat.isVisible ? 'Public' : 'Hidden'}.`);
+      loadCategories();
+    } catch (err: any) {
+      alert(`Could not update category: ${err.message}`);
+    }
+  };
+
   const handleDelete = async (id: string, catName: string) => {
     if (!window.confirm(`Delete category "${catName}"? Existing products will remain preserved.`)) return;
     try {
       await api.deleteCategory(id);
+      showToast(`Category "${catName}" deleted.`);
       loadCategories();
     } catch (err: any) {
       alert(`Delete failed: ${err.message}`);
@@ -112,8 +130,10 @@ export const AdminCategories: React.FC = () => {
     try {
       if (editingCategory) {
         await api.updateCategory(editingCategory.id, payload);
+        showToast(`Category "${payload.name}" updated successfully!`);
       } else {
         await api.createCategory(payload);
+        showToast(`Category "${payload.name}" created successfully!`);
       }
       setModalOpen(false);
       resetForm();
@@ -127,6 +147,12 @@ export const AdminCategories: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-[#17191F] text-white px-4 py-3 rounded-2xl shadow-2xl border border-zinc-700 text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-4">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#17191F]">Catalog Categories</h1>
@@ -187,15 +213,19 @@ export const AdminCategories: React.FC = () => {
                       /category/{c.slug}
                     </td>
                     <td className="py-3 px-4">
-                      {c.isVisible ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                          <Eye size={10} /> Public
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
-                          <EyeOff size={10} /> Hidden
-                        </span>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleVisibility(c)}
+                        className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+                          c.isVisible
+                            ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
+                            : 'text-zinc-600 bg-zinc-100 hover:bg-zinc-200 border border-zinc-300'
+                        }`}
+                        title="Click to toggle Public / Hidden visibility in store"
+                      >
+                        {c.isVisible ? <Eye size={12} className="text-emerald-600" /> : <EyeOff size={12} className="text-zinc-400" />}
+                        <span>{c.isVisible ? 'Public (Click to Hide)' : 'Hidden (Click to Publish)'}</span>
+                      </button>
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1">

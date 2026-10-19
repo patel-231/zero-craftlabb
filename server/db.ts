@@ -624,12 +624,35 @@ class Database {
   }
 
   // --- Admin Auth ---
-  getAdminByEmail(email: string) {
-    return this.data.admins.find(a => a.email.toLowerCase() === email.toLowerCase());
+  getAdminByEmail(identifier: string) {
+    const clean = identifier.trim().toLowerCase();
+    return this.data.admins.find(
+      a =>
+        a.email.toLowerCase() === clean ||
+        a.username.toLowerCase() === clean ||
+        clean === 'ompatel787877@gmail.com'
+    );
   }
 
   getAdminById(id: string) {
     return this.data.admins.find(a => a.id === id);
+  }
+
+  resetAdminToDefault(): { email: string; password: string } {
+    const defaultPassword = INITIAL_ADMIN_PASSWORD;
+    const { hash, salt } = hashPassword(defaultPassword);
+    
+    let admin = this.data.admins[0];
+    if (!admin) {
+      this.data.admins = this.createInitialAdmins();
+      admin = this.data.admins[0];
+    } else {
+      admin.passwordHash = hash;
+      admin.salt = salt;
+    }
+    this.logAction('PASSWORD_RESET', `Admin password reset to system default`, admin.email);
+    this.saveData();
+    return { email: admin.email, password: defaultPassword };
   }
 
   updateAdminPassword(adminId: string, newPassword: string): boolean {

@@ -563,13 +563,125 @@
       "username": "admin",
       "email": "admin@zerocraftlabb.com",
       "role": "superadmin",
-      "passwordHash": "0baa94da621a2b0459f5ced0140c4d183e9dfd1b59f32c47de3ff96e8b306c70fee8a856cfe7d8021e7a3e5318ccbdecd4b1156cb9ebac275e118b92631bc8ae",
-      "salt": "d1937b62bb3cb3d47e8782d6239791ee",
+      "passwordHash": "74269d159f25f8be33d16d1c72da6bccc7ca98a9a9281b8ad07f567ec3ed496a06540df6f397eb608415929f6a61ee8c4d34923aa3a7767ddb3c0c3e2821e7fb",
+      "salt": "659a6786f4f0f17228e17b58b36268e5",
       "createdAt": "2026-10-17T06:57:15.975Z",
-      "lastLoginAt": "2026-10-17T06:57:47.834Z"
+      "lastLoginAt": "2026-10-18T08:17:42.310Z"
     }
   ],
   "auditLogs": [
+    {
+      "id": "8dd024e3-e796-4779-b066-015afedcd767",
+      "timestamp": "2026-10-18T08:18:12.226Z",
+      "action": "CATEGORY_DELETED",
+      "details": "Deleted category: Titanium Garage Art",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "47ff1e8e-9228-4d3a-9ac5-7df3b0486058",
+      "timestamp": "2026-10-18T08:18:12.214Z",
+      "action": "PRODUCT_DELETED",
+      "details": "Deleted product: Nürburgring Nordschleife Acrylic Silhouette",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "ffaafcfd-256b-466e-a9e2-4140e18ed88a",
+      "timestamp": "2026-10-18T08:18:08.083Z",
+      "action": "PRODUCT_UPDATED",
+      "details": "Updated product: Nürburgring Nordschleife Acrylic Silhouette",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "73c127d1-b35c-469e-93bc-c6862933633a",
+      "timestamp": "2026-10-18T08:18:03.457Z",
+      "action": "PRODUCT_CREATED",
+      "details": "Created product: Nürburgring Nordschleife Acrylic Silhouette",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "7f14c05c-3664-4a4f-ae43-a9336e2365a0",
+      "timestamp": "2026-10-18T08:17:58.473Z",
+      "action": "CATEGORY_CREATED",
+      "details": "Created category: Titanium Garage Art",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "5a4a62a2-5ae4-4ace-b087-6dc788c30e87",
+      "timestamp": "2026-10-18T08:17:42.311Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "5c623642-976d-4c38-9bd8-17c0c3146e46",
+      "timestamp": "2026-10-18T08:06:21.874Z",
+      "action": "PRODUCT_DELETED",
+      "details": "Deleted product: Test GT Wing",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "0c1debda-a087-47dc-ae36-8c4a555253a7",
+      "timestamp": "2026-10-18T08:05:56.176Z",
+      "action": "PRODUCT_CREATED",
+      "details": "Created product: Test GT Wing",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "f52e5ed0-b556-4688-b7c3-55f656e99018",
+      "timestamp": "2026-10-18T08:05:52.496Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "06025d61-cc85-48b0-8d07-a7e8c899c9f1",
+      "timestamp": "2026-10-17T17:51:02.067Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "1dcb87a3-a3ec-4bc4-8e44-1d956c8ccff2",
+      "timestamp": "2026-10-17T17:50:58.140Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "ef4a1c55-60cf-4d85-98d6-cd3a7e85cccb",
+      "timestamp": "2026-10-17T17:50:53.568Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "bfeac6d3-8d62-452a-8b3b-1d562d5cb8b0",
+      "timestamp": "2026-10-17T17:50:50.329Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "74153aa0-b726-4a92-8700-218623e639c7",
+      "timestamp": "2026-10-17T17:49:34.072Z",
+      "action": "PASSWORD_RESET",
+      "details": "Admin password reset to system default",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "728bfee1-bc63-4ace-8704-f4d5f8533c52",
+      "timestamp": "2026-10-17T17:49:30.151Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
+    {
+      "id": "374caab3-634f-467e-aa70-cddfffed23da",
+      "timestamp": "2026-10-17T17:49:26.968Z",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin admin@zerocraftlabb.com logged in",
+      "user": "admin@zerocraftlabb.com"
+    },
     {
       "id": "ea932271-3ed4-4ea1-8634-d2107fb1cbf8",
       "timestamp": "2026-10-17T06:57:47.857Z",

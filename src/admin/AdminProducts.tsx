@@ -51,6 +51,18 @@ export const AdminProducts: React.FC = () => {
   // Variants and Specs state
   const [variants, setVariants] = useState<ProductVariant[]>([]);
   const [specs, setSpecs] = useState<Record<string, string>>({});
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [newSpecKey, setNewSpecKey] = useState('');
+  const [newSpecVal, setNewSpecVal] = useState('');
+
+  // Toast feedback
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -80,7 +92,7 @@ export const AdminProducts: React.FC = () => {
     setSlug('');
     setSku('');
     setCategoryId(categories[0]?.id || '');
-    setPrice(0);
+    setPrice(1499);
     setSalePrice(undefined);
     setStock(10);
     setShortDescription('');
@@ -93,6 +105,11 @@ export const AdminProducts: React.FC = () => {
     setIsNewArrival(false);
     setVariants([]);
     setSpecs({});
+    setTags([]);
+    setTagInput('');
+    setImageUrlInput('');
+    setNewSpecKey('');
+    setNewSpecVal('');
     setEditingProduct(null);
     setFormError(null);
   };
@@ -107,7 +124,7 @@ export const AdminProducts: React.FC = () => {
     setName(prod.name);
     setSlug(prod.slug);
     setSku(prod.sku);
-    setCategoryId(prod.categoryId);
+    setCategoryId(prod.categoryId || (categories[0]?.id || ''));
     setPrice(prod.price);
     setSalePrice(prod.salePrice);
     setStock(prod.stock);
@@ -121,8 +138,54 @@ export const AdminProducts: React.FC = () => {
     setIsNewArrival(prod.isNewArrival);
     setVariants(prod.variants || []);
     setSpecs(prod.specifications || {});
+    setTags(prod.tags || []);
+    setTagInput((prod.tags || []).join(', '));
+    setImageUrlInput('');
+    setNewSpecKey('');
+    setNewSpecVal('');
     setFormError(null);
     setModalOpen(true);
+  };
+
+  // Quick In-Table Toggles
+  const handleTogglePublished = async (prod: Product) => {
+    try {
+      await api.updateProduct(prod.id, { isPublished: !prod.isPublished });
+      showToast(`"${prod.name}" marked as ${!prod.isPublished ? 'Published' : 'Draft'}.`);
+      loadData();
+    } catch (err: any) {
+      alert(`Update failed: ${err.message}`);
+    }
+  };
+
+  const handleToggleBestseller = async (prod: Product) => {
+    try {
+      await api.updateProduct(prod.id, { isBestseller: !prod.isBestseller });
+      showToast(`"${prod.name}" bestseller badge ${!prod.isBestseller ? 'enabled' : 'disabled'}.`);
+      loadData();
+    } catch (err: any) {
+      alert(`Update failed: ${err.message}`);
+    }
+  };
+
+  const handleToggleFeatured = async (prod: Product) => {
+    try {
+      await api.updateProduct(prod.id, { isFeatured: !prod.isFeatured });
+      showToast(`"${prod.name}" featured status ${!prod.isFeatured ? 'enabled' : 'disabled'}.`);
+      loadData();
+    } catch (err: any) {
+      alert(`Update failed: ${err.message}`);
+    }
+  };
+
+  const handleToggleNewArrival = async (prod: Product) => {
+    try {
+      await api.updateProduct(prod.id, { isNewArrival: !prod.isNewArrival });
+      showToast(`"${prod.name}" new arrival badge ${!prod.isNewArrival ? 'enabled' : 'disabled'}.`);
+      loadData();
+    } catch (err: any) {
+      alert(`Update failed: ${err.message}`);
+    }
   };
 
   const handleDuplicate = async (prod: Product) => {
@@ -135,6 +198,7 @@ export const AdminProducts: React.FC = () => {
         sku: `${prod.sku}-CP`,
       };
       await api.createProduct(dupData);
+      showToast(`Duplicated "${prod.name}"!`);
       loadData();
     } catch (err: any) {
       alert(`Could not duplicate product: ${err.message}`);
@@ -145,10 +209,38 @@ export const AdminProducts: React.FC = () => {
     if (!window.confirm(`Are you sure you want to permanently delete "${prodName}"?`)) return;
     try {
       await api.deleteProduct(id);
+      showToast(`Deleted "${prodName}"!`);
       loadData();
     } catch (err: any) {
       alert(`Delete failed: ${err.message}`);
     }
+  };
+
+  // Direct image URL adder
+  const handleAddImageUrl = () => {
+    const trimmed = imageUrlInput.trim();
+    if (!trimmed) return;
+    setImages((prev) => [...prev, trimmed]);
+    if (!primaryImage) setPrimaryImage(trimmed);
+    setImageUrlInput('');
+  };
+
+  // Add Specification
+  const handleAddSpec = () => {
+    const k = newSpecKey.trim();
+    const v = newSpecVal.trim();
+    if (!k || !v) return;
+    setSpecs((prev) => ({ ...prev, [k]: v }));
+    setNewSpecKey('');
+    setNewSpecVal('');
+  };
+
+  const handleRemoveSpec = (keyToRemove: string) => {
+    setSpecs((prev) => {
+      const next = { ...prev };
+      delete next[keyToRemove];
+      return next;
+    });
   };
 
   // Image upload handling
@@ -186,22 +278,32 @@ export const AdminProducts: React.FC = () => {
       setFormError('Product name is required');
       return;
     }
-    if (price <= 0) {
-      setFormError('Please enter a valid price');
+    if (Number(price) <= 0) {
+      setFormError('Please enter a valid price greater than 0');
       return;
     }
 
     setIsSubmitting(true);
     setFormError(null);
 
+    const chosenCategoryId = categoryId || (categories.length > 0 ? categories[0].id : '');
+
+    // Parse tags from comma string if needed
+    const parsedTags = tagInput
+      ? tagInput
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : tags;
+
     const payload: Partial<Product> = {
       name: name.trim(),
-      slug: slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      slug: slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
       sku: sku.trim() || `ZC-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-      categoryId,
+      categoryId: chosenCategoryId,
       price: Number(price),
       salePrice: salePrice && Number(salePrice) > 0 ? Number(salePrice) : undefined,
-      stock: Number(stock),
+      stock: Number(stock) >= 0 ? Number(stock) : 10,
       shortDescription: shortDescription.trim(),
       description: description.trim(),
       images: images.length > 0 ? images : ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80'],
@@ -212,13 +314,16 @@ export const AdminProducts: React.FC = () => {
       isNewArrival,
       variants,
       specifications: specs,
+      tags: parsedTags,
     };
 
     try {
       if (editingProduct) {
         await api.updateProduct(editingProduct.id, payload);
+        showToast(`Product "${payload.name}" updated successfully!`);
       } else {
         await api.createProduct(payload);
+        showToast(`Product "${payload.name}" created successfully!`);
       }
       setModalOpen(false);
       resetForm();
@@ -243,16 +348,26 @@ export const AdminProducts: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-[#17191F] text-white px-4 py-3 rounded-2xl shadow-2xl border border-zinc-700 text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-4">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Top action header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#17191F]">Product Catalog</h1>
-          <p className="text-xs text-zinc-500 mt-1">Manage automotive pieces, specs, pricing, and variants.</p>
+          <p className="text-xs text-zinc-500 mt-1">
+            Manage automotive pieces, specs, pricing, and variants. Click any status badge below to toggle immediately.
+          </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#17191F] text-white text-xs font-bold hover:bg-[#5B5FEF] transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#17191F] text-white text-xs font-bold hover:bg-[#5B5FEF] transition-colors cursor-pointer"
         >
           <Plus size={16} />
           <span>New Product</span>
@@ -281,7 +396,9 @@ export const AdminProducts: React.FC = () => {
           >
             <option value="all">All Categories</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
@@ -293,7 +410,7 @@ export const AdminProducts: React.FC = () => {
           <div className="p-8 text-center text-xs text-zinc-400">Loading catalog...</div>
         ) : filteredProducts.length === 0 ? (
           <div className="p-8 text-center text-xs text-zinc-500">
-            No products found matching your search.
+            No products found matching your search. Click "New Product" to add your first automotive piece.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -304,7 +421,7 @@ export const AdminProducts: React.FC = () => {
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">Price</th>
                   <th className="py-3 px-4">Stock</th>
-                  <th className="py-3 px-4">Badges</th>
+                  <th className="py-3 px-4">Badges (Click to Toggle)</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
@@ -335,41 +452,68 @@ export const AdminProducts: React.FC = () => {
                       )}
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`font-mono font-bold ${
-                        p.stock <= 0 ? 'text-red-600' : p.stock <= 5 ? 'text-amber-600' : 'text-[#17191F]'
-                      }`}>
+                      <span
+                        className={`font-mono font-bold ${
+                          p.stock <= 0 ? 'text-red-600' : p.stock <= 5 ? 'text-amber-600' : 'text-[#17191F]'
+                        }`}
+                      >
                         {p.stock} units
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex gap-1">
-                        {p.isBestseller && (
-                          <span className="p-1 bg-[#FF7547]/10 text-[#FF7547] rounded" title="Bestseller">
-                            <Flame size={12} />
-                          </span>
-                        )}
-                        {p.isFeatured && (
-                          <span className="p-1 bg-amber-100 text-amber-700 rounded" title="Featured">
-                            <Star size={12} />
-                          </span>
-                        )}
-                        {p.isNewArrival && (
-                          <span className="p-1 bg-[#5B5FEF]/10 text-[#5B5FEF] rounded" title="New Arrival">
-                            <Sparkles size={12} />
-                          </span>
-                        )}
+                      <div className="flex gap-1.5 items-center">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleBestseller(p)}
+                          className={`p-1.5 rounded transition-colors ${
+                            p.isBestseller
+                              ? 'bg-[#FF7547] text-white shadow-xs'
+                              : 'bg-zinc-100 text-zinc-400 hover:text-[#FF7547] hover:bg-orange-50'
+                          }`}
+                          title={`Bestseller: ${p.isBestseller ? 'Active (click to remove)' : 'Off (click to activate)'}`}
+                        >
+                          <Flame size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFeatured(p)}
+                          className={`p-1.5 rounded transition-colors ${
+                            p.isFeatured
+                              ? 'bg-amber-400 text-amber-950 shadow-xs'
+                              : 'bg-zinc-100 text-zinc-400 hover:text-amber-500 hover:bg-amber-50'
+                          }`}
+                          title={`Featured: ${p.isFeatured ? 'Active (click to remove)' : 'Off (click to activate)'}`}
+                        >
+                          <Star size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleNewArrival(p)}
+                          className={`p-1.5 rounded transition-colors ${
+                            p.isNewArrival
+                              ? 'bg-[#5B5FEF] text-white shadow-xs'
+                              : 'bg-zinc-100 text-zinc-400 hover:text-[#5B5FEF] hover:bg-indigo-50'
+                          }`}
+                          title={`New Arrival: ${p.isNewArrival ? 'Active (click to remove)' : 'Off (click to activate)'}`}
+                        >
+                          <Sparkles size={13} />
+                        </button>
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      {p.isPublished ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                          <Eye size={10} /> Published
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
-                          <EyeOff size={10} /> Draft
-                        </span>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleTogglePublished(p)}
+                        className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+                          p.isPublished
+                            ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
+                            : 'text-zinc-600 bg-zinc-100 hover:bg-zinc-200 border border-zinc-300'
+                        }`}
+                        title="Click to toggle Published / Draft status in storefront"
+                      >
+                        {p.isPublished ? <Eye size={12} className="text-emerald-600" /> : <EyeOff size={12} className="text-zinc-400" />}
+                        <span>{p.isPublished ? 'Published' : 'Draft'}</span>
+                      </button>
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -542,11 +686,43 @@ export const AdminProducts: React.FC = () => {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none focus:border-[#5B5FEF]"
                   />
                 </div>
+                {/* Tags */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold uppercase text-zinc-700 mb-1">
+                    Tags (Comma-separated for search &amp; filters)
+                  </label>
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    placeholder="Automotive, F1, Track Art, Gift, Silhouette"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-sm focus:outline-none focus:border-[#5B5FEF]"
+                  />
+                </div>
               </div>
 
               {/* Product Images Manager */}
               <div className="space-y-3 pt-4 border-t border-[#E7E3D8]">
                 <label className="block text-xs font-bold uppercase text-zinc-700">Product Images</label>
+                
+                {/* Paste Direct URL */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                    placeholder="Paste direct image URL (https://...)"
+                    className="flex-1 px-3 py-2 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-xs focus:outline-none focus:border-[#5B5FEF]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    className="px-4 py-2 bg-[#17191F] text-white text-xs font-bold rounded-xl hover:bg-[#5B5FEF] transition-colors"
+                  >
+                    Add URL
+                  </button>
+                </div>
+
                 <div className="flex flex-wrap gap-3">
                   {images.map((imgUrl, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden border border-zinc-300 group">
@@ -577,10 +753,60 @@ export const AdminProducts: React.FC = () => {
                   {/* Upload button */}
                   <label className="w-20 h-20 rounded-xl border-2 border-dashed border-zinc-300 hover:border-[#5B5FEF] flex flex-col items-center justify-center text-zinc-400 hover:text-[#5B5FEF] cursor-pointer transition-colors">
                     <Upload size={18} />
-                    <span className="text-[10px] mt-1 font-bold">Upload</span>
+                    <span className="text-[10px] mt-1 font-bold">Upload File</span>
                     <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
                   </label>
                 </div>
+              </div>
+
+              {/* Specifications / Technical Details Manager */}
+              <div className="space-y-3 pt-4 border-t border-[#E7E3D8]">
+                <label className="block text-xs font-bold uppercase text-zinc-700">Specifications &amp; Features</label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    placeholder="Feature / Key (e.g. Material)"
+                    value={newSpecKey}
+                    onChange={(e) => setNewSpecKey(e.target.value)}
+                    className="sm:w-1/3 px-3 py-2 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-xs focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Value (e.g. 5mm Cast Acrylic)"
+                    value={newSpecVal}
+                    onChange={(e) => setNewSpecVal(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-xl border border-[#E7E3D8] bg-[#F7F5F0] text-xs focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddSpec}
+                    className="px-4 py-2 bg-zinc-200 text-zinc-800 hover:bg-[#17191F] hover:text-white rounded-xl text-xs font-bold transition-colors shrink-0"
+                  >
+                    + Add Spec
+                  </button>
+                </div>
+
+                {Object.entries(specs).length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    {Object.entries(specs).map(([k, v]) => (
+                      <div
+                        key={k}
+                        className="flex items-center justify-between p-2.5 bg-[#F7F5F0] rounded-xl border border-[#E7E3D8] text-xs"
+                      >
+                        <div>
+                          <strong className="text-zinc-800">{k}:</strong> <span className="text-zinc-600">{v}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSpec(k)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Visibility and Flags */}

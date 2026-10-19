@@ -136,10 +136,15 @@ export interface Order {
 }
 
 export interface EmailConfig {
-  provider?: 'brevo';
+  provider?: 'brevo' | 'smtp' | 'none';
   brevoApiKey?: string;
   brevoSenderEmail?: string;
   brevoSenderName?: string;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpSecure?: boolean;
 }
 
 export interface WebsiteSettings {
